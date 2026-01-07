@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesys Interaction Query Tool</title>
+    <meta name="description"
+        content="Advanced SQL query tool for Genesys Cloud interaction exports with structured and unstructured data support">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Genesys Spark Design System Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Genesys Spark Components CSS -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/genesys-spark-components@latest/dist/genesys-webcomponents/genesys-webcomponents.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Interaction Query</h1>
+                        <span class="tagline">Genesys Cloud Data Explorer</span>
+                    </div>
+                </div>
+                <div class="header-stats" id="headerStats">
+                    <div class="stat-badge">
+                        <span class="stat-icon">📊</span>
+                        <span class="stat-label">Records:</span>
+                        <span class="stat-value" id="recordCount">0</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-icon">📋</span>
+                        <span class="stat-label">Columns:</span>
+                        <span class="stat-value" id="columnCount">0</span>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="stat-icon">🏷️</span>
+                        <span class="stat-label">Attributes:</span>
+                        <span class="stat-value" id="attributeCount">0</span>
+                    </div>
+                    <button class="new-file-btn" id="newFileBtn" title="Load a different CSV file"
+                        style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="12" y1="18" x2="12" y2="12" />
+                            <line x1="9" y1="15" x2="15" y2="15" />
+                        </svg>
+                        New File
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-card">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <h2>Upload Genesys Exports</h2>
+                        <p>Drag & drop one or more CSV files, or click to browse</p>
+                        <p class="upload-hint">Multiple files will be merged if they have matching columns</p>
+                        <input type="file" id="fileInput" accept=".csv" multiple hidden>
+                        <button class="upload-btn" id="uploadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="12" y1="18" x2="12" y2="12" />
+                                <line x1="9" y1="15" x2="15" y2="15" />
+                            </svg>
+                            Select CSV Files
+                        </button>
+                    </div>
+
+                    <!-- File List Section -->
+                    <div class="file-list-section" id="fileListSection" style="display: none;">
+                        <div class="file-list-header">
+                            <h3>📁 Selected Files</h3>
+                            <button class="clear-files-btn" id="clearFilesBtn" title="Clear all files">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18" />
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                Clear All
+                            </button>
+                        </div>
+                        <div class="file-list" id="fileList"></div>
+                        <div class="file-validation" id="fileValidation"></div>
+                        <button class="process-files-btn" id="processFilesBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                            Process & Merge Files
+                        </button>
+                    </div>
+
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">Processing...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Query Section (Hidden until file loaded) -->
+            <section class="query-section" id="querySection" style="display: none;">
+                <!-- Schema Explorer -->
+                <aside class="schema-panel" id="schemaPanel">
+                    <div class="panel-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                            Schema Explorer
+                        </h3>
+                        <button class="collapse-btn" id="collapseSchema">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="schema-search">
+                        <input type="text" id="schemaSearch" placeholder="Search columns & attributes...">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </div>
+                    <div class="schema-tabs">
+                        <button class="schema-tab active" data-tab="columns">Columns</button>
+                        <button class="schema-tab" data-tab="attributes">Attributes</button>
+                    </div>
+                    <div class="schema-content">
+                        <div class="schema-list" id="columnsList"></div>
+                        <div class="schema-list" id="attributesList" style="display: none;"></div>
+                    </div>
+                </aside>
+
+                <!-- Query Editor -->
+                <div class="query-workspace">
+                    <div class="query-editor-container">
+                        <div class="editor-header">
+                            <h3>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6" />
+                                    <polyline points="8 6 2 12 8 18" />
+                                </svg>
+                                SQL Query
+                            </h3>
+                            <div class="editor-actions">
+                                <button class="action-btn" id="clearQuery" title="Clear Query">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18" />
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
+                                </button>
+                                <button class="action-btn" id="formatQuery" title="Format Query">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="21" y1="10" x2="3" y2="10" />
+                                        <line x1="21" y1="6" x2="3" y2="6" />
+                                        <line x1="21" y1="14" x2="3" y2="14" />
+                                        <line x1="21" y1="18" x2="3" y2="18" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editor-wrapper">
+                            <textarea id="queryEditor" placeholder="SELECT * FROM interactions WHERE..."></textarea>
+                            <div class="editor-hint">
+                                <strong>💡 Tip:</strong> Use <code>ATTR('key')</code> to search participant attributes.
+                                Example: <code>WHERE ATTR('VIN') != 'NOT_SET'</code>
+                            </div>
+                        </div>
+                        <div class="query-actions">
+                            <button class="run-btn" id="runQuery">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3" />
+                                </svg>
+                                Run Query
+                                <span class="shortcut">Ctrl+Enter</span>
+                            </button>
+                            <div class="query-examples-container">
+                                <div class="examples-row">
+                                    <span class="examples-label">📋 Quick Filters:</span>
+                                    <button class="example-btn" data-query="SELECT * FROM interactions LIMIT 200">All
+                                        Records</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Queue], [Wrap-up] FROM interactions WHERE [Wrap-up] = 'Disconnect' LIMIT 200">Disconnected
+                                        Calls</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Queue], [Direction] FROM interactions WHERE [Direction] = 'inbound' LIMIT 200">Inbound
+                                        Only</button>
+                                </div>
+                                <div class="examples-row">
+                                    <span class="examples-label">🚗 Vehicle Data:</span>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('VIN'), ATTR('country'), ATTR('Service') FROM interactions WHERE ATTR('VIN') != 'NOT_SET' LIMIT 200">With
+                                        VIN</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], ATTR('VIN'), ATTR('brand'), ATTR('modelDescription'), ATTR('licensePlate') FROM interactions WHERE ATTR('brand') LIKE '%Mercedes%' LIMIT 200">Mercedes
+                                        Vehicles</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], ATTR('VIN'), ATTR('brand'), ATTR('Service'), ATTR('FIN') FROM interactions WHERE ATTR('FIN') != '' LIMIT 200">With
+                                        FIN Number</button>
+                                </div>
+                                <div class="examples-row">
+                                    <span class="examples-label">🌍 By Country:</span>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('country'), ATTR('language'), ATTR('Service') FROM interactions WHERE ATTR('country') = 'Germany' LIMIT 200">Germany</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('country'), ATTR('language'), ATTR('Service') FROM interactions WHERE ATTR('country') = 'Netherlands' LIMIT 200">Netherlands</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], ATTR('country'), ATTR('language') FROM interactions WHERE ATTR('language') = 'GERMAN' LIMIT 200">German
+                                        Language</button>
+                                </div>
+                                <div class="examples-row">
+                                    <span class="examples-label">📞 Service Type:</span>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], ATTR('Service'), ATTR('CallTrigger_Description'), ATTR('Queue_Trigger') FROM interactions WHERE ATTR('Service') = 'RSA' LIMIT 200">Roadside
+                                        Assistance</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], ATTR('Service'), ATTR('IntentRS'), ATTR('RoutingDetails') FROM interactions WHERE ATTR('Service') = 'CS' LIMIT 200">Customer
+                                        Service</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], ATTR('Service'), ATTR('Origin'), ATTR('CallTrigger_Description') FROM interactions WHERE ATTR('CallTrigger_Description') != 'NOT_SET' LIMIT 200">With
+                                        Call Trigger</button>
+                                </div>
+                                <div class="examples-row">
+                                    <span class="examples-label">📊 Custom:</span>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Participant Attributes Formatted] FROM interactions LIMIT 200">Show
+                                        All Attributes</button>
+                                    <button class="example-btn"
+                                        data-query="SELECT [Conversation ID], [Users], ATTR('GPS_Latitude'), ATTR('GPS_Longitude'), ATTR('country') FROM interactions WHERE ATTR('GPS_Latitude') != '' LIMIT 200">With
+                                        GPS Location</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div class="results-container" id="resultsContainer">
+                        <div class="results-header">
+                            <div class="results-info">
+                                <h3>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="3" y1="9" x2="21" y2="9" />
+                                        <line x1="9" y1="21" x2="9" y2="9" />
+                                    </svg>
+                                    Results
+                                </h3>
+                                <span class="results-count" id="resultsCount"></span>
+                                <span class="query-time" id="queryTime"></span>
+                            </div>
+                            <div class="results-actions">
+                                <button class="export-btn" id="exportCsv" title="Export to CSV">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    Export CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div class="results-placeholder" id="resultsPlaceholder">
+                            <div class="placeholder-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="16" x2="12" y2="12" />
+                                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                                </svg>
+                            </div>
+                            <p>Write a query and press <strong>Run Query</strong> to see results</p>
+                        </div>
+                        <div class="results-error" id="resultsError" style="display: none;">
+                            <div class="error-icon">⚠️</div>
+                            <p class="error-title">Query Error</p>
+                            <p class="error-message" id="errorMessage"></p>
+                        </div>
+                        <div class="results-table-wrapper" id="resultsTableWrapper" style="display: none;">
+                            <table class="results-table" id="resultsTable">
+                                <thead id="resultsHead"></thead>
+                                <tbody id="resultsBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="results-pagination" id="resultsPagination" style="display: none;">
+                            <button class="page-btn" id="prevPage">Previous</button>
+                            <span class="page-info" id="pageInfo"></span>
+                            <button class="page-btn" id="nextPage">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Row Detail Modal -->
+        <div class="modal-overlay" id="rowDetailModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Interaction Details</h3>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
