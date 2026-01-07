@@ -221,47 +221,45 @@
                                         Only</button>
                                 </div>
                                 <div class="examples-row">
-                                    <span class="examples-label">🚗 Vehicle Data:</span>
+                                    <span class="examples-label">� Customer Data:</span>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('VIN'), ATTR('country'), ATTR('Service') FROM interactions WHERE ATTR('VIN') != 'NOT_SET' LIMIT 200">With
-                                        VIN</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('CustomerID'), ATTR('AccountType') FROM interactions WHERE ATTR('CustomerID') != '' LIMIT 200">With
+                                        Customer ID</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], ATTR('VIN'), ATTR('brand'), ATTR('modelDescription'), ATTR('licensePlate') FROM interactions WHERE ATTR('brand') LIKE '%Mercedes%' LIMIT 200">Mercedes
-                                        Vehicles</button>
+                                        data-query="SELECT [Conversation ID], ATTR('CustomerID'), ATTR('AccountType'), ATTR('Priority') FROM interactions WHERE ATTR('Priority') = 'High' LIMIT 200">VIP
+                                        Customers</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], ATTR('VIN'), ATTR('brand'), ATTR('Service'), ATTR('FIN') FROM interactions WHERE ATTR('FIN') != '' LIMIT 200">With
-                                        FIN Number</button>
+                                        data-query="SELECT [Conversation ID], ATTR('CustomerID'), ATTR('AccountType'), ATTR('Region') FROM interactions WHERE ATTR('AccountType') = 'Premium' LIMIT 200">Premium
+                                        Accounts</button>
                                 </div>
                                 <div class="examples-row">
-                                    <span class="examples-label">🌍 By Country:</span>
+                                    <span class="examples-label">� By Queue:</span>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('country'), ATTR('language'), ATTR('Service') FROM interactions WHERE ATTR('country') = 'Germany' LIMIT 200">Germany</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Queue], [Wrap-up] FROM interactions WHERE [Queue] LIKE '%Sales%' LIMIT 200">Sales</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], [Date], ATTR('country'), ATTR('language'), ATTR('Service') FROM interactions WHERE ATTR('country') = 'Netherlands' LIMIT 200">Netherlands</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Queue], [Wrap-up] FROM interactions WHERE [Queue] LIKE '%Support%' LIMIT 200">Support</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], ATTR('country'), ATTR('language') FROM interactions WHERE ATTR('language') = 'GERMAN' LIMIT 200">German
-                                        Language</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Queue], [Wrap-up] FROM interactions WHERE [Queue] LIKE '%Billing%' LIMIT 200">Billing</button>
                                 </div>
                                 <div class="examples-row">
-                                    <span class="examples-label">📞 Service Type:</span>
+                                    <span class="examples-label">📞 Call Analysis:</span>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], ATTR('Service'), ATTR('CallTrigger_Description'), ATTR('Queue_Trigger') FROM interactions WHERE ATTR('Service') = 'RSA' LIMIT 200">Roadside
-                                        Assistance</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Duration], [Wrap-up] FROM interactions WHERE [Duration] > 300 LIMIT 200">Long
+                                        Calls (5min+)</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], ATTR('Service'), ATTR('IntentRS'), ATTR('RoutingDetails') FROM interactions WHERE ATTR('Service') = 'CS' LIMIT 200">Customer
-                                        Service</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Wrap-up], [Queue] FROM interactions WHERE [Wrap-up] = 'Transferred' LIMIT 200">Transferred
+                                        Calls</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], ATTR('Service'), ATTR('Origin'), ATTR('CallTrigger_Description') FROM interactions WHERE ATTR('CallTrigger_Description') != 'NOT_SET' LIMIT 200">With
-                                        Call Trigger</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [Wrap-up], [Queue] FROM interactions WHERE [Wrap-up] = 'Callback Scheduled' LIMIT 200">Callbacks</button>
                                 </div>
                                 <div class="examples-row">
-                                    <span class="examples-label">📊 Custom:</span>
+                                    <span class="examples-label">📊 Explore:</span>
                                     <button class="example-btn"
                                         data-query="SELECT [Conversation ID], [Users], [Date], [Participant Attributes Formatted] FROM interactions LIMIT 200">Show
                                         All Attributes</button>
                                     <button class="example-btn"
-                                        data-query="SELECT [Conversation ID], [Users], ATTR('GPS_Latitude'), ATTR('GPS_Longitude'), ATTR('country') FROM interactions WHERE ATTR('GPS_Latitude') != '' LIMIT 200">With
-                                        GPS Location</button>
+                                        data-query="SELECT [Conversation ID], [Users], [Date], [MOS], [Queue] FROM interactions WHERE [MOS] != '' LIMIT 200">With
+                                        Quality Score</button>
                                 </div>
                             </div>
                         </div>
