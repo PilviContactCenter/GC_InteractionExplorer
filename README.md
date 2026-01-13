@@ -208,12 +208,3 @@ After running a query:
 
 ---
 
-## 📞 Support
-
-For questions or issues, please contact your system administrator or the tool developer.
-
----
-
-<p align="center">
-  <em>Built for Genesys Cloud analytics</em>
-</p>
